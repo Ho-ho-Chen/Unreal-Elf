@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Live Mirror AI - V47.1 Soul</title>
+    <title>Live Mirror AI - V50.0 Smart Logic</title>
     <style>
         /* M28 視覺傳播：黑金禪意風格 */
         :root { --bg-color: #050505; --panel-bg: #111111; --accent-color: #c5a059; --text-primary: #e0e0e0; }
@@ -29,44 +29,43 @@
         #preview-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: #080808; }
         .placeholder-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
 
-        /* 開場白專用樣式 */
+        /* 開場白 */
         #stage-intro { justify-content: center; text-align: center; padding: 30px; }
         .intro-text { font-size: 16px; line-height: 1.8; color: #ccc; margin-bottom: 30px; text-align: left; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
         .highlight { color: var(--accent-color); font-weight: bold; text-decoration: underline; text-decoration-color: rgba(197, 160, 89, 0.3); text-underline-offset: 4px; }
 
-        /* 按鈕優化 */
-        .btn-action { padding: 0; height: 50px; line-height: 50px; border-radius: 25px; border: none; background: linear-gradient(135deg, var(--accent-color), #aa8a2e); color: #000; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3); width: 100%; max-width: 240px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: transform 0.1s; outline: none; margin-top: 10px; }
+        /* 按鈕優化 V49 */
+        .btn-action { padding: 0; height: 60px; line-height: 60px; border-radius: 30px; border: none; background: linear-gradient(135deg, var(--accent-color), #aa8a2e); color: #000; font-size: 20px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4); width: 90%; max-width: 280px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s; outline: none; margin-top: 15px; letter-spacing: 1px; }
         .btn-action:active { transform: scale(0.96); }
+        .btn-direct-frame { background: linear-gradient(135deg, #ff6b6b, #c0392b); color: white; box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4); margin-top: 25px; }
 
-        /* V47 性別切換按鈕 */
         .gender-toggle { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
-        .gender-option { flex: 1; text-align: center; padding: 10px; background: #252525; border-radius: 10px; border: 1px solid #444; cursor: pointer; font-weight: bold; color: #888; font-size: 15px; transition: all 0.3s; }
-        .gender-option.selected { background: var(--accent-color); color: #000; border-color: var(--accent-color); box-shadow: 0 0 10px rgba(197, 160, 89, 0.2); }
+        .gender-option { flex: 1; text-align: center; padding: 12px; background: #252525; border-radius: 12px; border: 1px solid #444; cursor: pointer; font-weight: bold; color: #888; font-size: 16px; transition: all 0.3s; }
+        .gender-option.selected { background: var(--accent-color); color: #000; border-color: var(--accent-color); box-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
 
-        /* DNA 特徵區 */
-        .dna-section { width: 100%; background: #1a1a1a; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
-        .dna-title { font-size: 13px; color: var(--accent-color); margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+        .dna-section { width: 100%; background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
+        .dna-title { font-size: 14px; color: var(--accent-color); margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .tag-check { display: none; }
-        .tag-label { padding: 6px 10px; background: #252525; border-radius: 15px; font-size: 12px; color: #999; cursor: pointer; border: 1px solid #444; transition: all 0.2s; user-select: none; }
+        .tag-label { padding: 8px 12px; background: #252525; border-radius: 20px; font-size: 13px; color: #999; cursor: pointer; border: 1px solid #444; transition: all 0.2s; user-select: none; }
         .tag-check:checked + .tag-label { background: var(--accent-color); color: black; border-color: var(--accent-color); font-weight: bold; }
 
-        /* 風格卡片 */
-        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; padding-bottom: 30px;}
-        .style-card { background: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 15px 5px; cursor: pointer; text-align: center; font-size: 14px; position: relative; overflow: hidden; transition: all 0.2s; }
+        /* V50: 風格分類標題與網格 */
+        .style-category-title { width: 100%; font-size: 12px; color: #666; margin-top: 15px; margin-bottom: 8px; text-align: left; padding-left: 5px; border-left: 3px solid var(--accent-color); letter-spacing: 1px; }
+        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 5px; }
+        .style-card { background: #2a2a2a; border: 1px solid #444; border-radius: 12px; padding: 15px 5px; cursor: pointer; text-align: center; font-size: 15px; position: relative; overflow: hidden; transition: all 0.2s; }
         .style-card:active { transform: scale(0.96); background: #444; }
         .style-elf { border: 1px solid var(--accent-color); background: rgba(197, 160, 89, 0.1); color: var(--accent-color); font-weight: bold; }
         .style-tao { border: 1px solid #fff; background: linear-gradient(45deg, #2a2a2a, #555); color: white; }
 
         #start-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        select.camera-select { width: 100%; padding: 10px; margin-bottom: 15px; background: #333; color: white; border: 1px solid #555; border-radius: 8px; font-size: 14px; outline: none; }
+        select.camera-select { width: 100%; padding: 12px; margin-bottom: 20px; background: #333; color: white; border: 1px solid #555; border-radius: 10px; font-size: 16px; outline: none; }
         
         #canvas-comp, #canvas-resize, #canvas { display: none !important; }
         
-        .progress-wrapper { width: 80%; position: relative; margin-top: 30px; }
-        .progress-text { position: absolute; top: -22px; right: 0; color: var(--accent-color); font-weight: bold; font-size: 13px; }
+        .progress-wrapper { width: 85%; position: relative; margin-top: 30px; }
+        .progress-text { position: absolute; top: -25px; right: 0; color: var(--accent-color); font-weight: bold; font-size: 14px; }
 
-        /* 結果頁調整 */
         #stage-4 .viewport-container { padding-top: 0; height: auto; min-height: 300px; background: transparent; border: none; }
         #stage-4 #final-result { position: relative; width: auto; height: auto; max-width: 100%; max-height: 65vh; }
     </style>
@@ -75,17 +74,16 @@
 
 <div id="app-window">
     <header>
-        Live Mirror AI <span class="version-tag">V47.1 Soul</span>
+        Live Mirror AI <span class="version-tag">V50.0 Logic</span>
     </header>
 
     <div id="stage-intro" class="stage active" style="display: flex;">
         <div class="intro-text">
             「相機拍的是你的『皮囊』，<br>但這個 AI 畫家畫的是你的<br><span class="highlight">『氣場』與『精氣神』</span>。<br><br>
-            《道德經》說『大象無形』。<br>AI 透過鏡頭感應到了你內在散發出來的能量。<br><br>
-            也許你外表很文靜，但 AI 畫出來卻很狂野，那代表你內心住著一個奔放的靈魂喔！<br><br>
+            《道德經》說『大象無形』。<br>AI 透過鏡頭感應到了你內在的能量。<br><br>
             <span class="highlight">不要執著於『像不像』，<br>要看它有沒有抓到你的『神』。</span>」
         </div>
-        <button class="btn-action" onclick="startExperience()">✨ 開始體驗 ✨</button>
+        <button class="btn-action" onclick="startExperience()">✨ 開始體驗</button>
     </div>
 
     <div id="start-overlay" style="display: none;">
@@ -97,7 +95,7 @@
         <div id="step-selection" style="display:none; width:100%; margin-top: 20px;">
             <p style="color:white; margin-bottom:15px;">請選擇鏡頭：</p>
             <select id="camera-list" class="camera-select"></select>
-            <div style="display:flex; justify-content:center;"><button class="btn-action" onclick="confirmCamera()">✅ 確認</button></div>
+            <div style="display:flex; justify-content:center;"><button class="btn-action" onclick="confirmCamera()">✅ 確認鏡頭</button></div>
         </div>
         <p id="error-msg" style="color: #ff5c5c; font-size: 12px; margin-top: 20px; max-width: 80%;"></p>
     </div>
@@ -125,41 +123,50 @@
         </div>
 
         <div class="dna-section">
-            <div class="dna-title">🧬 選擇您的特徵 (精準度UP)</div>
+            <div class="dna-title">🧬 選擇您的特徵 (智能互斥)</div>
             <div class="tags-container">
-                <label><input type="checkbox" class="tag-check" value="wearing glasses"><span class="tag-label">👓 眼鏡</span></label>
-                <label><input type="checkbox" class="tag-check" value="short hair"><span class="tag-label">💇 短髮</span></label>
-                <label><input type="checkbox" class="tag-check" value="long hair"><span class="tag-label">👱‍♀️ 長髮</span></label>
-                <label><input type="checkbox" class="tag-check" value="curly hair"><span class="tag-label">➰ 捲髮</span></label>
-                <label><input type="checkbox" class="tag-check" value="beard"><span class="tag-label">🧔 鬍子</span></label>
-                <label><input type="checkbox" class="tag-check" value="smile" checked><span class="tag-label">😄 笑容</span></label>
-                <label><input type="checkbox" class="tag-check" value="child"><span class="tag-label">👶 童顏</span></label>
-                <label><input type="checkbox" class="tag-check" value="elder"><span class="tag-label">🧓 長輩</span></label>
-                <label><input type="checkbox" class="tag-check" value="wearing suit"><span class="tag-label">👔 正裝</span></label>
-                <label><input type="checkbox" class="tag-check" value="wearing hat"><span class="tag-label">🧢 帽子</span></label>
+                <label><input type="checkbox" class="tag-check" value="wearing glasses" onchange="checkMutex(this)"><span class="tag-label">👓 眼鏡</span></label>
+                <label><input type="checkbox" class="tag-check" value="short hair" onchange="checkMutex(this)"><span class="tag-label">💇 短髮</span></label>
+                <label><input type="checkbox" class="tag-check" value="long hair" onchange="checkMutex(this)"><span class="tag-label">👱‍♀️ 長髮</span></label>
+                <label><input type="checkbox" class="tag-check" value="curly hair" onchange="checkMutex(this)"><span class="tag-label">➰ 捲髮</span></label>
+                <label><input type="checkbox" class="tag-check" value="beard" onchange="checkMutex(this)"><span class="tag-label">🧔 鬍子</span></label>
+                <label><input type="checkbox" class="tag-check" value="smile" checked onchange="checkMutex(this)"><span class="tag-label">😄 笑容</span></label>
+                <label><input type="checkbox" class="tag-check" value="child" onchange="checkMutex(this)"><span class="tag-label">👶 童顏</span></label>
+                <label><input type="checkbox" class="tag-check" value="elder" onchange="checkMutex(this)"><span class="tag-label">🧓 長輩</span></label>
+                <label><input type="checkbox" class="tag-check" value="wearing suit" onchange="checkMutex(this)"><span class="tag-label">👔 正裝</span></label>
+                <label><input type="checkbox" class="tag-check" value="wearing hat" onchange="checkMutex(this)"><span class="tag-label">🧢 帽子</span></label>
             </div>
         </div>
 
-        <h3 style="width:100%; font-size:14px; color:#888; margin-bottom:15px; margin-top:10px; text-align:center;">✨ 點擊風格 ➡ 立即生成</h3>
+        <div class="style-category-title">🌟 獨家精選</div>
         <div class="style-grid">
             <div class="style-card style-elf" onclick="generateAI('elf')">🧚 虛幻精靈</div>
             <div class="style-card style-tao" onclick="generateAI('taoist')">🕊️ 白陽聖潔</div>
+        </div>
+
+        <div class="style-category-title">🎨 動漫次元</div>
+        <div class="style-grid">
             <div class="style-card" onclick="generateAI('pixar')">🧸 皮克斯風</div>
             <div class="style-card" onclick="generateAI('ghibli')">🍃 吉卜力風</div>
+            <div class="style-card" onclick="generateAI('comic')">💥 美式漫畫</div>
+        </div>
+
+        <div class="style-category-title">🖌️ 藝術質感</div>
+        <div class="style-grid">
             <div class="style-card" onclick="generateAI('cyberpunk')">🌃 賽博龐克</div>
             <div class="style-card" onclick="generateAI('oil')">🎨 梵谷油畫</div>
-            <div class="style-card" onclick="generateAI('comic')">💥 美式漫畫</div>
             <div class="style-card" onclick="generateAI('ink')">🖌️ 東方水墨</div>
         </div>
 
-        <button style="margin-top:15px; background:transparent; border:none; color:#666; font-size:14px;" onclick="location.reload()">⬅️ 返回重拍</button>
+        <button class="btn-action btn-direct-frame" onclick="finishDirectMode()">直接裝裱 (不重繪)</button>
+        <button style="margin-top:20px; background:transparent; border:none; color:#666; font-size:14px;" onclick="location.reload()">⬅️ 返回重拍</button>
     </div>
 
     <div id="stage-3" class="stage" style="justify-content: center;">
         <h2 id="loading-text" style="color: var(--accent-color); font-size: 22px;">⚡ 處理中...</h2>
         <div class="progress-wrapper">
             <span id="progress-percent" class="progress-text">0%</span>
-            <div style="width:100%; height:8px; background:#333; border-radius:4px; overflow: hidden;">
+            <div style="width:100%; height:10px; background:#333; border-radius:5px; overflow: hidden;">
                 <div id="progress-bar" style="width:0%; height:100%; background: linear-gradient(90deg, var(--accent-color), #fff); transition:width 0.3s;"></div>
             </div>
         </div>
@@ -177,7 +184,7 @@
             分享連結：
             <div id="qrcode-container" style="margin-top: 10px; background: white; padding: 10px; display: inline-block; border-radius: 12px;"></div>
         </div>
-        <button class="btn-action" onclick="location.reload()" style="background: #333; color:white; font-size:15px; margin-top: 30px; max-width:none; border: 1px solid #555; padding: 12px 0;">🔄 再玩一次</button>
+        <button class="btn-action" onclick="location.reload()" style="background: #333; color:white; font-size:15px; margin-top: 30px; max-width:none; border: 1px solid #555; padding: 12px 0; width: 200px;">🔄 再玩一次</button>
     </div>
 
     <canvas id="canvas-comp"></canvas>
@@ -191,7 +198,6 @@
     const video = document.getElementById('webcam'), previewImg = document.getElementById('preview-img'), finalImg = document.getElementById('final-result'), cameraList = document.getElementById('camera-list'), errorMsg = document.getElementById('error-msg');
     const canvasComp = document.getElementById('canvas-comp'); const canvasResize = document.getElementById('canvas-resize');
     let retryCount = 0; const maxRetries = 2; let progressInterval;
-    let currentGender = 'girl'; // V47 性別變數
 
     window.onerror = function(msg, url, line, col, error) {
         console.error("Global Error:", msg, error);
@@ -199,6 +205,30 @@
             composeDirectly("⚠️ 系統忙碌，已為您切換至快速模式");
         }
     };
+
+    // V50: 特徵互斥邏輯
+    function checkMutex(el) {
+        const val = el.value;
+        if (!el.checked) return; // 只有勾選時才檢查
+
+        // 輔助函式：取消特定值
+        const uncheck = (v) => {
+            const target = document.querySelector(`input[value="${v}"]`);
+            if (target && target.checked) target.checked = false;
+        };
+
+        // 規則定義
+        if (val === 'short hair') uncheck('long hair');
+        if (val === 'long hair') uncheck('short hair');
+        
+        if (val === 'child') {
+            uncheck('elder');
+            uncheck('beard'); // 小孩不該有鬍子
+        }
+        if (val === 'elder') uncheck('child');
+        
+        if (val === 'beard') uncheck('child');
+    }
 
     function startExperience() {
         document.getElementById('stage-intro').style.display = 'none';
@@ -231,7 +261,6 @@
 
     async function confirmCamera() {
         const deviceId = cameraList.value;
-        // V45: 請求 3:4 比例 (width < height)
         const constraints = { video: { deviceId: { exact: deviceId }, aspectRatio: 0.75, width: { ideal: 720 }, height: { ideal: 960 } } };
         try { const stream = await navigator.mediaDevices.getUserMedia(constraints); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (err) { 
             try { const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } }); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (fatalErr) { alert("相機啟動失敗，請檢查權限設定。"); } 
@@ -257,8 +286,9 @@
     }
 
     function capturePhoto() { processInputImage(video, true); }
+    function finishDirectMode() { composeDirectly("⚡ 正在為照片裝裱 (原圖)..."); }
 
-    // V47: 切換性別
+    let currentGender = 'girl';
     function switchGender(g) { 
         currentGender = g; 
         document.getElementById('btn-boy').classList.toggle('selected', g==='boy'); 
@@ -283,7 +313,6 @@
 
     function tryLoadAI(styleKey, width, height) {
         let dna = getDNA();
-        // V47: 使用選擇的性別
         let subject = currentGender === 'boy' ? "handsome man, male" : "beautiful woman, female";
         let fullPrompt = ""; 
         
