@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Live Mirror AI - V14.5 Elf</title>
+    <style>
+        /* M28 視覺傳播：V14 黑金高質感設計 */
+        :root { --bg-color: #000000; --panel-bg: #1a1a1a; --accent-color: #d4af37; /* 金色 */ --text-primary: #ffffff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: "Microsoft JhengHei", sans-serif; background: var(--bg-color); color: var(--text-primary); display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #app-window { width: 100%; height: 100dvh; max-width: 500px; background: var(--panel-bg); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,0.9); }
+        
+        header { padding: 15px; text-align: center; border-bottom: 1px solid #333; font-weight: bold; flex: none; font-size: 18px; display: flex; justify-content: center; align-items: center; gap: 10px; color: var(--accent-color); }
+        .version-tag { font-size: 10px; background: linear-gradient(45deg, var(--accent-color), #ffd700); padding: 2px 6px; border-radius: 4px; color: #000; font-weight: 900; }
+
+        .stage { flex: 1; display: none; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto; overflow-x: hidden; }
+        .active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .viewport-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; flex: none; border: 1px solid #333; min-height: 250px; }
+        
+        #preview-img, #final-result { width: 100%; height: 100%; object-fit: contain; display: none; }
+        #preview-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: #080808; }
+        .placeholder-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+
+        /* DNA 特徵設定區 (V14 特色) */
+        .dna-section { width: 100%; background: #252525; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #444; }
+        .dna-title { font-size: 14px; color: var(--accent-color); margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-check { display: none; }
+        .tag-label { padding: 8px 12px; background: #333; border-radius: 20px; font-size: 13px; color: #ccc; cursor: pointer; border: 1px solid #555; transition: all 0.2s; user-select: none; }
+        .tag-check:checked + .tag-label { background: var(--accent-color); color: black; border-color: var(--accent-color); font-weight: bold; }
+
+        .btn-group { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 20px; }
+        .btn-action { padding: 0; height: 45px; line-height: 45px; border-radius: 25px; border: none; background: linear-gradient(135deg, var(--accent-color), #aa8a2e); color: #000; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3); width: 100%; max-width: 160px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: transform 0.1s; outline: none; }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-upload { background: #333; color: white; border: 1px solid #444; box-shadow: none; }
+        
+        /* 按鈕修正 */
+        .btn-direct-frame { background: linear-gradient(135deg, #ff6b6b, #c0392b); color: white; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); width: 200px; }
+
+        #start-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        select.camera-select { width: 100%; padding: 10px; margin-bottom: 15px; background: #333; color: white; border: 1px solid #555; border-radius: 8px; font-size: 14px; outline: none; }
+        
+        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; padding-bottom: 40px;}
+        .style-card { background: #2a2a2a; border: 1px solid #444; border-radius: 12px; padding: 12px 5px; cursor: pointer; text-align: center; font-size: 15px; position: relative; overflow: hidden; transition: all 0.2s; }
+        .style-card:active { transform: scale(0.96); background: #444; }
+        
+        /* 虛幻精靈樣式 */
+        .style-elf { border-color: #00eaff; background: linear-gradient(45deg, rgba(0, 234, 255, 0.1), #2a2a2a); color: #00eaff; }
+        .style-tao { border-color: #ffffff; background: linear-gradient(45deg, #2a2a2a, #555); color: white; }
+
+        .gender-toggle { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .gender-option { flex: 1; text-align: center; padding: 10px; background: #333; border-radius: 10px; border: 1px solid #555; cursor: pointer; font-weight: bold; color: #888; font-size: 15px; transition: all 0.3s; }
+        .gender-option.selected { background: var(--accent-color); color: black; }
+        
+        #canvas-comp, #canvas-resize, #canvas { display: none !important; }
+        #file-input { display: none; }
+        
+        .progress-wrapper { width: 80%; position: relative; margin-top: 30px; }
+        .progress-text { position: absolute; top: -22px; right: 0; color: var(--accent-color); font-weight: bold; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div id="app-window">
+    <header>
+        Live Mirror AI <span class="version-tag">V14.5 Elf</span>
+    </header>
+
+    <div id="start-overlay">
+        <h1 style="color:white; margin-bottom:10px; font-size: 24px;">👋 歡迎體驗</h1>
+        <p style="color:#aaa; margin-bottom:30px; font-size: 14px;">V14.5 精靈幻化版</p>
+        <div id="btn-container" class="btn-group">
+            <button class="btn-action" onclick="initCameraMode()">📸 啟動相機</button>
+            <button class="btn-action btn-upload" onclick="triggerUpload()">📁 上傳照片</button>
+        </div>
+        <div id="step-selection" style="display:none; width:100%; margin-top: 20px;">
+            <p style="color:white; margin-bottom:15px;">請選擇鏡頭：</p>
+            <select id="camera-list" class="camera-select"></select>
+            <div style="display:flex; justify-content:center;"><button class="btn-action" onclick="confirmCamera()">✅ 確認</button></div>
+        </div>
+        <p id="error-msg" style="color: #ff5c5c; font-size: 12px; margin-top: 20px; max-width: 80%;"></p>
+    </div>
+    
+    <input type="file" id="file-input" accept="image/*">
+
+    <div id="stage-1" class="stage">
+        <div class="viewport-container" style="max-height: 60vh;">
+            <video id="webcam" playsinline class="mirror" autoplay style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+        </div>
+        <button class="btn-action" onclick="capturePhoto()" style="width: 200px; max-width: none;">📸 拍 照</button>
+        <p style="margin-top:20px; font-size:14px; color:#666; cursor:pointer; text-decoration: underline;" onclick="location.reload()">[返回首頁]</p>
+    </div>
+
+    <div id="stage-2" class="stage">
+        <div class="viewport-container" style="height: 200px; border: 2px solid var(--accent-color); background: #000;">
+            <div id="preview-placeholder">
+                <div class="placeholder-icon">🖼️</div>
+                <span>等待照片載入...</span>
+            </div>
+            <img id="preview-img" src="">
+        </div>
+        
+        <div class="ai-only-section">
+            <div class="gender-toggle">
+                <div class="gender-option" onclick="selectGender('boy')" id="btn-boy">👦 男生</div>
+                <div class="gender-option selected" onclick="selectGender('girl')" id="btn-girl">👧 女生</div>
+            </div>
+
+            <div class="dna-section">
+                <div class="dna-title">🧬 告訴 AI 您的特徵 (精準度UP)</div>
+                <div class="tags-container">
+                    <label><input type="checkbox" class="tag-check" value="glasses"><span class="tag-label">👓 戴眼鏡</span></label>
+                    <label><input type="checkbox" class="tag-check" value="short hair"><span class="tag-label">💇 短髮</span></label>
+                    <label><input type="checkbox" class="tag-check" value="long hair" checked><span class="tag-label">👱‍♀️ 長髮</span></label>
+                    <label><input type="checkbox" class="tag-check" value="curly hair"><span class="tag-label">➰ 捲髮</span></label>
+                    <label><input type="checkbox" class="tag-check" value="smile" checked><span class="tag-label">😄 微笑</span></label>
+                    <label><input type="checkbox" class="tag-check" value="office lady"><span class="tag-label">💼 氣質</span></label>
+                </div>
+            </div>
+
+            <h3 style="width:100%; font-size:14px; color:#888; margin-bottom:10px;">選擇風格 (點擊生成)：</h3>
+            <div class="style-grid">
+                <div class="style-card style-elf" onclick="generateAI('elf')">🧚 虛幻精靈</div>
+                <div class="style-card style-tao" onclick="generateAI('taoist')">🕊️ 白陽聖潔</div>
+                <div class="style-card" onclick="generateAI('pixar')">🧸 皮克斯風</div>
+                <div class="style-card" onclick="generateAI('ghibli')">🍃 吉卜力風</div>
+                <div class="style-card" onclick="generateAI('cyberpunk')">🌃 賽博龐克</div>
+                <div class="style-card" onclick="generateAI('oil')">🎨 梵谷油畫</div>
+                <div class="style-card" onclick="generateAI('comic')">💥 美式漫畫</div>
+                <div class="style-card" onclick="generateAI('ink')">🖌️ 東方水墨</div>
+            </div>
+        </div>
+
+        <button id="btn-upload-finish" class="btn-action" onclick="finishUploadMode()" style="display:none; width:100%; max-width:none; margin-bottom: 20px;">✨ 直接輸出 (使用原圖)</button>
+        
+        <button style="margin-top:5px; background:transparent; border:none; color:#666; font-size:15px;" onclick="location.reload()">⬅️ 返回首頁</button>
+    </div>
+
+    <div id="stage-3" class="stage" style="justify-content: center;">
+        <h2 id="loading-text" style="color: var(--accent-color); font-size: 22px;">⚡ 處理中...</h2>
+        <div class="progress-wrapper">
+            <span id="progress-percent" class="progress-text">0%</span>
+            <div style="width:100%; height:8px; background:#333; border-radius:4px; overflow: hidden;">
+                <div id="progress-bar" style="width:0%; height:100%; background: linear-gradient(90deg, var(--accent-color), #fff); transition:width 0.3s;"></div>
+            </div>
+        </div>
+        <p id="prompt-debug" style="color:#888; font-size:12px; margin-top:15px; max-width:80%; text-align:center;">正在初始化...</p>
+    </div>
+
+    <div id="stage-4" class="stage">
+        <h2 style="color: var(--accent-color); font-size: 22px;">✨ 您的專屬畫像</h2>
+        <div class="viewport-container" style="background: transparent; border: none; min-height: 300px; height: auto; padding: 10px;">
+            <div id="result-placeholder" style="display:block; color:#555;">準備中...</div>
+            <img id="final-result" src="" style="box-shadow: 0 10px 40px rgba(0,0,0,0.7); width: auto; height: auto; max-width: 100%; max-height: 65vh;">
+        </div>
+        <p style="color: var(--accent-color); font-weight: bold; font-size: 16px; margin-top: 15px;">👇 長按圖片儲存 👇</p>
+        <div style="font-size: 13px; color: #888; margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; width: 100%; text-align: center;">
+            分享連結：
+            <div id="qrcode-container" style="margin-top: 10px; background: white; padding: 10px; display: inline-block; border-radius: 12px;"></div>
+        </div>
+        <button class="btn-action" onclick="location.reload()" style="background: #333; color:white; font-size:15px; margin-top: 30px; max-width:none; border: 1px solid #555; padding: 12px 0;">🔄 再玩一次</button>
+    </div>
+
+    <canvas id="canvas-comp"></canvas>
+    <canvas id="canvas-resize"></canvas>
+    <canvas id="canvas"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+    const video = document.getElementById('webcam'), previewImg = document.getElementById('preview-img'), finalImg = document.getElementById('final-result'), cameraList = document.getElementById('camera-list'), errorMsg = document.getElementById('error-msg');
+    const canvasComp = document.getElementById('canvas-comp'); const canvasResize = document.getElementById('canvas-resize');
+    let currentGender = 'girl'; let isUploadMode = false; let loadingTimer;
+    let retryCount = 0; const maxRetries = 2; let progressInterval;
+
+    window.onerror = function(msg, url, line, col, error) {
+        console.error("Global Error:", msg, error);
+        if(document.getElementById('stage-3').style.display === 'flex') {
+            composeDirectly("⚠️ 系統忙碌，已為您切換至快速模式");
+        }
+    };
+
+    async function initCameraMode() {
+        errorMsg.innerText = "";
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            await listCameras();
+            stream.getTracks().forEach(track => track.stop());
+            setMode(false);
+            document.getElementById('btn-container').style.display = 'none';
+            document.getElementById('step-selection').style.display = 'block';
+        } catch (err) { console.error(err); errorMsg.innerText = "啟動失敗：請確認瀏覽器已允許相機權限(NotAllowedError)。"; }
+    }
+
+    async function listCameras() {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        cameraList.innerHTML = '';
+        videoDevices.forEach((device, index) => {
+            const option = document.createElement('option'); option.value = device.deviceId;
+            let label = device.label || `相機 ${index + 1}`;
+            if (label.toLowerCase().includes('back') || label.includes('後')) label = "📸 後置鏡頭"; else if (label.toLowerCase().includes('front') || label.includes('前')) label = "👤 前置自拍";
+            option.text = label; cameraList.appendChild(option);
+        });
+    }
+
+    async function confirmCamera() {
+        const deviceId = cameraList.value;
+        const constraints = { video: { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } } };
+        try { const stream = await navigator.mediaDevices.getUserMedia(constraints); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (err) { 
+            try { const stream = await navigator.mediaDevices.getUserMedia({ video: true }); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (fatalErr) { alert("相機啟動失敗，請檢查權限設定。"); } 
+        }
+    }
+
+    // V14 特徵獲取函式
+    function getDNA() {
+        const checkboxes = document.querySelectorAll('.tag-check:checked');
+        let tags = [];
+        checkboxes.forEach(cb => tags.push(cb.value));
+        return tags.join(", ");
+    }
+
+    function selectGender(g) { 
+        currentGender = g; 
+        document.getElementById('btn-boy').classList.toggle('selected', g==='boy'); 
+        document.getElementById('btn-girl').classList.toggle('selected', g==='girl'); 
+    }
+
+    function setMode(upload) { 
+        isUploadMode = upload; 
+        const stage2 = document.getElementById('stage-2'); 
+        const uploadBtn = document.getElementById('btn-upload-finish'); 
+        previewImg.style.display = 'none';
+        document.getElementById('preview-placeholder').style.display = 'flex';
+        if (isUploadMode) { stage2.classList.add('upload-mode'); uploadBtn.style.display = 'flex'; previewImg.classList.remove('mirror'); } else { stage2.classList.remove('upload-mode'); uploadBtn.style.display = 'none'; previewImg.classList.add('mirror'); } 
+    }
+    function triggerUpload() { document.getElementById('file-input').click(); }
+    document.getElementById('file-input').addEventListener('change', function(e) { if (e.target.files && e.target.files[0]) { const reader = new FileReader(); reader.onload = function(event) { const img = new Image(); img.onload = function() { processInputImage(img); }; img.src = event.target.result; }; reader.readAsDataURL(e.target.files[0]); } });
+    
+    function finishUploadMode() { composeDirectly("⚡ 正在處理..."); }
+
+    function processInputImage(imgElement, isCamera = false) {
+        const MAX_WORK_SIZE = 1024; 
+        let w = imgElement.width; let h = imgElement.height;
+        if (w > h) { if (w > MAX_WORK_SIZE) { h *= MAX_WORK_SIZE / w; w = MAX_WORK_SIZE; } } 
+        else { if (h > MAX_WORK_SIZE) { w *= MAX_WORK_SIZE / h; h = MAX_WORK_SIZE; } }
+        canvasResize.width = w; canvasResize.height = h;
+        const ctx = canvasResize.getContext('2d');
+        if (isCamera) { ctx.translate(w, 0); ctx.scale(-1, 1); }
+        ctx.drawImage(imgElement, 0, 0, w, h);
+        previewImg.src = canvasResize.toDataURL('image/jpeg', 0.95);
+        previewImg.style.display = 'block';
+        document.getElementById('preview-placeholder').style.display = 'none';
+        setMode(!isCamera); document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-2');
+    }
+
+    function capturePhoto() { processInputImage(video, true); }
+
+    function generateAI(styleKey) { 
+        if (isUploadMode) return;
+        switchStage('stage-3');
+        document.getElementById('loading-text').innerText = "⚡ AI 繪圖中...";
+        simulateProgress();
+        retryCount = 0;
+        tryLoadAI(styleKey, 768, 1024);
+    }
+
+    function tryLoadAI(styleKey, width, height) {
+        let genderBase = currentGender === 'boy' ? "handsome man, male" : "beautiful woman, female"; 
+        let dna = getDNA(); // 獲取特徵
+        let fullPrompt = ""; 
+
+        // V14.5 Prompt 組合邏輯
+        if(styleKey === 'pixar') fullPrompt = `cute 3d pixar style ${genderBase}, ${dna}, studio lighting, big eyes, 8k`; 
+        else if(styleKey === 'ghibli') fullPrompt = `studio ghibli anime portrait of ${genderBase}, ${dna}, hayao miyazaki style, watercolor background`; 
+        else if(styleKey === 'cyberpunk') fullPrompt = `cyberpunk portrait of ${genderBase}, ${dna}, neon lights, mechanical parts, futuristic city`; 
+        else if(styleKey === 'oil') fullPrompt = `van gogh oil painting portrait of ${genderBase}, ${dna}, thick brushstrokes, artistic, starry night`; 
+        else if(styleKey === 'comic') fullPrompt = `american comic superhero ${genderBase}, ${dna}, bold lines, halftone dots, marvel style`; 
+        else if(styleKey === 'ink') fullPrompt = `chinese ink wash painting portrait of ${genderBase}, ${dna}, black and white, sumi-e, artistic, red stamp`; 
+        // V14.5 新增：虛幻精靈
+        else if(styleKey === 'elf') fullPrompt = `(masterpiece), best quality, ethereal fantasy portrait of a ${genderBase}, ${dna}, beautiful elf spirit, pointed ears, glowing skin, magical forest background with bioluminescent lights, dreamy atmosphere, highly detailed, 8k`; 
+        // V14.5 保留：白陽聖潔
+        else if(styleKey === 'taoist') fullPrompt = `(masterpiece), traditional chinese ancient style portrait of ${genderBase}, ${dna}, righteous aura, white hanfu, taoist robe, ethereal atmosphere, soft lighting, temple background, lotus, hd, 8k`; 
+        
+        const ratio = previewImg.naturalWidth / previewImg.naturalHeight;
+        let aiW = width, aiH = height;
+        if (ratio > 1.1) { [aiW, aiH] = [height, width]; } 
+
+        const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${aiW}&height=${aiH}&seed=${Math.floor(Math.random()*999999)}&nologo=true&model=flux&t=${Date.now()}`; 
+        
+        const tempImg = new Image();
+        tempImg.crossOrigin = "anonymous";
+        
+        const watchdog = setTimeout(() => { handleAILoadError(styleKey, "超時"); }, 45000);
+
+        tempImg.onload = () => {
+            clearTimeout(watchdog);
+            composeFinalImage(aiUrl, "⚡ AI 繪圖完成...");
+        };
+
+        tempImg.onerror = () => {
+            clearTimeout(watchdog);
+            handleAILoadError(styleKey, "載入失敗");
+        };
+        tempImg.src = aiUrl;
+    }
+
+    function handleAILoadError(styleKey, reason) {
+        retryCount++;
+        const debug = document.getElementById('prompt-debug');
+        if (retryCount <= maxRetries) {
+            debug.innerText = `連線繁忙，降級重試中 (${retryCount}/${maxRetries})...`;
+            setTimeout(() => { tryLoadAI(styleKey, 512, 768); }, 1500);
+        } else {
+            debug.innerText = "AI 忙線，已切換至原圖裝裱...";
+            setTimeout(() => { composeDirectly("⚠️ AI 忙線，已為您使用原圖"); }, 500);
+        }
+    }
+
+    function composeFinalImage(sourceImageUrl, loadingMsg) {
+        document.getElementById('loading-text').innerText = loadingMsg || "⚡ 處理中..."; 
+        document.getElementById('prompt-debug').innerText = "影像合成中...";
+        
+        const baseImg = new Image();
+        if (sourceImageUrl.startsWith('http')) { baseImg.crossOrigin = "anonymous"; }
+        
+        baseImg.onload = () => { processComposition(baseImg); };
+        baseImg.onerror = () => { composeDirectly("⚠️ 影像處理異常，使用原圖備份"); }; 
+        baseImg.src = sourceImageUrl;
+    }
+
+    function composeDirectly(loadingMsg) {
+        document.getElementById('loading-text').innerText = loadingMsg;
+        setTimeout(() => {
+            const fallbackImg = new Image();
+            fallbackImg.onload = () => { processComposition(fallbackImg); };
+            fallbackImg.src = previewImg.src;
+        }, 100);
+    }
+
+    function processComposition(imageSource) {
+        try {
+            const workW = imageSource.width;
+            const workH = imageSource.height;
+
+            canvasComp.width = workW; 
+            canvasComp.height = workH;
+            const ctx = canvasComp.getContext('2d');
+
+            // 直接繪製，無邊框無文字
+            ctx.drawImage(imageSource, 0, 0);
+            
+            finalImg.src = canvasComp.toDataURL('image/png'); 
+            finalImg.style.display = 'block';
+            document.getElementById('result-placeholder').style.display = 'none';
+            
+            if(typeof progressInterval !== 'undefined') clearInterval(progressInterval);
+            document.getElementById('progress-bar').style.width = '100%';
+            
+            document.getElementById('loading-text').innerText = "完成！";
+            setTimeout(() => {
+                 document.getElementById("qrcode-container").innerHTML = ""; 
+                 new QRCode(document.getElementById("qrcode-container"), { text: window.location.href, width: 120, height: 120 }); 
+                 switchStage('stage-4');
+            }, 100);
+
+        } catch (e) {
+            console.error(e);
+            finalImg.src = previewImg.src;
+            finalImg.style.display = 'block';
+            switchStage('stage-4');
+        }
+    }
+
+    function simulateProgress() { const bar = document.getElementById('progress-bar'); const text = document.getElementById('progress-percent'); const debug = document.getElementById('prompt-debug'); let w = 0; progressInterval = setInterval(() => { if(w>=99) clearInterval(progressInterval); if(w < 50) w += Math.random() * 5; else if(w < 80) w += Math.random() * 2; else w += Math.random() * 0.5; w = Math.min(w, 99); bar.style.width = w + '%'; text.innerText = Math.floor(w) + '%'; if(w < 30) debug.innerText = "正在構思畫面細節..."; else if(w < 60) debug.innerText = "AI 大師揮毫中..."; else if(w < 90) debug.innerText = "正在進行光影渲染..."; else debug.innerText = "最後修飾..."; }, 500); }
+    function switchStage(id) { document.querySelectorAll('.stage').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); }); const target = document.getElementById(id); target.style.display = 'flex'; setTimeout(()=>target.classList.add('active'), 10); }
+</script>
+</body>
+</html>
