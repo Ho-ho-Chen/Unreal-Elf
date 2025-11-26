@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Live Mirror AI - V14.5 Elf</title>
+    <title>Live Mirror AI - V44.0 Soul</title>
     <style>
-        /* M28 視覺傳播：V14 黑金高質感設計 */
-        :root { --bg-color: #000000; --panel-bg: #1a1a1a; --accent-color: #d4af37; /* 金色 */ --text-primary: #ffffff; }
+        /* M28 視覺傳播：黑金禪意風格 */
+        :root { --bg-color: #050505; --panel-bg: #111111; --accent-color: #c5a059; --text-accent: #ff6b6b; --text-primary: #e0e0e0; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: "Microsoft JhengHei", sans-serif; background: var(--bg-color); color: var(--text-primary); display: flex; justify-content: center; align-items: center; overflow: hidden; }
         #app-window { width: 100%; height: 100dvh; max-width: 500px; background: var(--panel-bg); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,0.9); }
         
-        header { padding: 15px; text-align: center; border-bottom: 1px solid #333; font-weight: bold; flex: none; font-size: 18px; display: flex; justify-content: center; align-items: center; gap: 10px; color: var(--accent-color); }
+        header { padding: 12px; text-align: center; border-bottom: 1px solid #222; font-weight: bold; flex: none; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--accent-color); letter-spacing: 1px; }
         .version-tag { font-size: 10px; background: linear-gradient(45deg, var(--accent-color), #ffd700); padding: 2px 6px; border-radius: 4px; color: #000; font-weight: 900; }
 
-        .stage { flex: 1; display: none; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto; overflow-x: hidden; }
-        .active { display: flex; animation: fadeIn 0.3s ease; }
+        .stage { flex: 1; display: none; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; overflow-x: hidden; }
+        .active { display: flex; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 開場白樣式 */
+        #stage-intro { justify-content: center; text-align: center; padding: 40px; }
+        .intro-text { font-size: 16px; line-height: 1.8; color: #ccc; margin-bottom: 30px; text-align: left; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
+        .highlight { color: var(--accent-color); font-weight: bold; }
+        .quote { font-style: italic; color: #888; font-size: 14px; margin-top: 20px; display: block; text-align: right; }
 
         .viewport-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; flex: none; border: 1px solid #333; min-height: 250px; }
         
@@ -24,57 +30,58 @@
         #preview-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: #080808; }
         .placeholder-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
 
-        /* DNA 特徵設定區 (V14 特色) */
-        .dna-section { width: 100%; background: #252525; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #444; }
-        .dna-title { font-size: 14px; color: var(--accent-color); margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag-check { display: none; }
-        .tag-label { padding: 8px 12px; background: #333; border-radius: 20px; font-size: 13px; color: #ccc; cursor: pointer; border: 1px solid #555; transition: all 0.2s; user-select: none; }
-        .tag-check:checked + .tag-label { background: var(--accent-color); color: black; border-color: var(--accent-color); font-weight: bold; }
-
-        .btn-group { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 20px; }
-        .btn-action { padding: 0; height: 45px; line-height: 45px; border-radius: 25px; border: none; background: linear-gradient(135deg, var(--accent-color), #aa8a2e); color: #000; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3); width: 100%; max-width: 160px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: transform 0.1s; outline: none; }
+        .btn-action { padding: 0; height: 50px; line-height: 50px; border-radius: 25px; border: none; background: linear-gradient(135deg, var(--accent-color), #aa8a2e); color: #000; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3); width: 100%; max-width: 240px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: transform 0.1s; outline: none; margin-top: 20px; }
         .btn-action:active { transform: scale(0.96); }
-        .btn-upload { background: #333; color: white; border: 1px solid #444; box-shadow: none; }
-        
-        /* 按鈕修正 */
-        .btn-direct-frame { background: linear-gradient(135deg, #ff6b6b, #c0392b); color: white; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); width: 200px; }
+        .btn-direct-frame { background: linear-gradient(135deg, #ff6b6b, #c0392b); color: white; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); }
+
+        /* DNA 特徵區 */
+        .dna-section { width: 100%; background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
+        .dna-title { font-size: 13px; color: var(--accent-color); margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .tag-check { display: none; }
+        .tag-label { padding: 8px 12px; background: #252525; border-radius: 20px; font-size: 13px; color: #888; cursor: pointer; border: 1px solid #444; transition: all 0.2s; user-select: none; }
+        .tag-check:checked + .tag-label { background: var(--accent-color); color: black; border-color: var(--accent-color); font-weight: bold; box-shadow: 0 0 10px rgba(197, 160, 89, 0.3); }
 
         #start-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         select.camera-select { width: 100%; padding: 10px; margin-bottom: 15px; background: #333; color: white; border: 1px solid #555; border-radius: 8px; font-size: 14px; outline: none; }
         
-        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; padding-bottom: 40px;}
-        .style-card { background: #2a2a2a; border: 1px solid #444; border-radius: 12px; padding: 12px 5px; cursor: pointer; text-align: center; font-size: 15px; position: relative; overflow: hidden; transition: all 0.2s; }
+        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; padding-bottom: 30px;}
+        .style-card { background: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 15px 5px; cursor: pointer; text-align: center; font-size: 14px; position: relative; overflow: hidden; transition: all 0.2s; }
         .style-card:active { transform: scale(0.96); background: #444; }
-        
-        /* 虛幻精靈樣式 */
-        .style-elf { border-color: #00eaff; background: linear-gradient(45deg, rgba(0, 234, 255, 0.1), #2a2a2a); color: #00eaff; }
-        .style-tao { border-color: #ffffff; background: linear-gradient(45deg, #2a2a2a, #555); color: white; }
+        .style-elf { border: 1px solid var(--accent-color); background: rgba(197, 160, 89, 0.1); }
+        .style-tao { border: 1px solid #fff; background: linear-gradient(45deg, #2a2a2a, #555); }
 
-        .gender-toggle { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
-        .gender-option { flex: 1; text-align: center; padding: 10px; background: #333; border-radius: 10px; border: 1px solid #555; cursor: pointer; font-weight: bold; color: #888; font-size: 15px; transition: all 0.3s; }
-        .gender-option.selected { background: var(--accent-color); color: black; }
-        
         #canvas-comp, #canvas-resize, #canvas { display: none !important; }
-        #file-input { display: none; }
         
         .progress-wrapper { width: 80%; position: relative; margin-top: 30px; }
         .progress-text { position: absolute; top: -22px; right: 0; color: var(--accent-color); font-weight: bold; font-size: 13px; }
+
+        #stage-4 .viewport-container { padding-top: 0; height: auto; min-height: 300px; background: transparent; border: none; }
+        #stage-4 #final-result { position: relative; width: auto; height: auto; max-width: 100%; max-height: 65vh; }
     </style>
 </head>
 <body>
 
 <div id="app-window">
     <header>
-        Live Mirror AI <span class="version-tag">V14.5 Elf</span>
+        Live Mirror AI <span class="version-tag">V44.0 Soul</span>
     </header>
 
-    <div id="start-overlay">
-        <h1 style="color:white; margin-bottom:10px; font-size: 24px;">👋 歡迎體驗</h1>
-        <p style="color:#aaa; margin-bottom:30px; font-size: 14px;">V14.5 精靈幻化版</p>
-        <div id="btn-container" class="btn-group">
+    <div id="stage-intro" class="stage active" style="display: flex;">
+        <div class="intro-text">
+            「相機拍的是你的『皮囊』，<br>但這個 AI 畫家畫的是你的<br><span class="highlight">『氣場』與『精氣神』</span>。<br><br>
+            《道德經》說『大象無形』。<br>AI 透過鏡頭感應到了你內在散發出來的能量。<br><br>
+            也許你外表很文靜，但 AI 畫出來卻很狂野，那代表你內心住著一個奔放的靈魂喔！<br><br>
+            <span class="highlight">不要執著於『像不像』，<br>要看它有沒有抓到你的『神』。</span>」
+        </div>
+        <button class="btn-action" onclick="startExperience()">✨ 開始體驗 ✨</button>
+    </div>
+
+    <div id="start-overlay" style="display: none;">
+        <h1 style="color:white; margin-bottom:10px; font-size: 24px;">📷 連結靈魂之窗</h1>
+        <p style="color:#aaa; margin-bottom:30px; font-size: 14px;">請允許相機權限</p>
+        <div id="step-permission">
             <button class="btn-action" onclick="initCameraMode()">📸 啟動相機</button>
-            <button class="btn-action btn-upload" onclick="triggerUpload()">📁 上傳照片</button>
         </div>
         <div id="step-selection" style="display:none; width:100%; margin-top: 20px;">
             <p style="color:white; margin-bottom:15px;">請選擇鏡頭：</p>
@@ -83,19 +90,17 @@
         </div>
         <p id="error-msg" style="color: #ff5c5c; font-size: 12px; margin-top: 20px; max-width: 80%;"></p>
     </div>
-    
-    <input type="file" id="file-input" accept="image/*">
 
     <div id="stage-1" class="stage">
-        <div class="viewport-container" style="max-height: 60vh;">
-            <video id="webcam" playsinline class="mirror" autoplay style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+        <div class="viewport-container">
+            <video id="webcam" playsinline class="mirror" autoplay muted></video>
         </div>
-        <button class="btn-action" onclick="capturePhoto()" style="width: 200px; max-width: none;">📸 拍 照</button>
+        <button class="btn-action" onclick="capturePhoto()">📸 拍 照</button>
         <p style="margin-top:20px; font-size:14px; color:#666; cursor:pointer; text-decoration: underline;" onclick="location.reload()">[返回首頁]</p>
     </div>
 
     <div id="stage-2" class="stage">
-        <div class="viewport-container" style="height: 200px; border: 2px solid var(--accent-color); background: #000;">
+        <div class="viewport-container" style="border: 2px solid var(--accent-color);">
             <div id="preview-placeholder">
                 <div class="placeholder-icon">🖼️</div>
                 <span>等待照片載入...</span>
@@ -103,40 +108,36 @@
             <img id="preview-img" src="">
         </div>
         
-        <div class="ai-only-section">
-            <div class="gender-toggle">
-                <div class="gender-option" onclick="selectGender('boy')" id="btn-boy">👦 男生</div>
-                <div class="gender-option selected" onclick="selectGender('girl')" id="btn-girl">👧 女生</div>
-            </div>
-
-            <div class="dna-section">
-                <div class="dna-title">🧬 告訴 AI 您的特徵 (精準度UP)</div>
-                <div class="tags-container">
-                    <label><input type="checkbox" class="tag-check" value="glasses"><span class="tag-label">👓 戴眼鏡</span></label>
-                    <label><input type="checkbox" class="tag-check" value="short hair"><span class="tag-label">💇 短髮</span></label>
-                    <label><input type="checkbox" class="tag-check" value="long hair" checked><span class="tag-label">👱‍♀️ 長髮</span></label>
-                    <label><input type="checkbox" class="tag-check" value="curly hair"><span class="tag-label">➰ 捲髮</span></label>
-                    <label><input type="checkbox" class="tag-check" value="smile" checked><span class="tag-label">😄 微笑</span></label>
-                    <label><input type="checkbox" class="tag-check" value="office lady"><span class="tag-label">💼 氣質</span></label>
-                </div>
-            </div>
-
-            <h3 style="width:100%; font-size:14px; color:#888; margin-bottom:10px;">選擇風格 (點擊生成)：</h3>
-            <div class="style-grid">
-                <div class="style-card style-elf" onclick="generateAI('elf')">🧚 虛幻精靈</div>
-                <div class="style-card style-tao" onclick="generateAI('taoist')">🕊️ 白陽聖潔</div>
-                <div class="style-card" onclick="generateAI('pixar')">🧸 皮克斯風</div>
-                <div class="style-card" onclick="generateAI('ghibli')">🍃 吉卜力風</div>
-                <div class="style-card" onclick="generateAI('cyberpunk')">🌃 賽博龐克</div>
-                <div class="style-card" onclick="generateAI('oil')">🎨 梵谷油畫</div>
-                <div class="style-card" onclick="generateAI('comic')">💥 美式漫畫</div>
-                <div class="style-card" onclick="generateAI('ink')">🖌️ 東方水墨</div>
+        <div class="dna-section">
+            <div class="dna-title">🧬 告訴 AI 您的特徵 (精準度UP)</div>
+            <div class="tags-container">
+                <label><input type="checkbox" class="tag-check" value="wearing glasses"><span class="tag-label">👓 戴眼鏡</span></label>
+                <label><input type="checkbox" class="tag-check" value="short hair"><span class="tag-label">💇 短髮</span></label>
+                <label><input type="checkbox" class="tag-check" value="long hair"><span class="tag-label">👱‍♀️ 長髮</span></label>
+                <label><input type="checkbox" class="tag-check" value="curly hair"><span class="tag-label">➰ 捲髮</span></label>
+                <label><input type="checkbox" class="tag-check" value="beard"><span class="tag-label">🧔 有鬍子</span></label>
+                <label><input type="checkbox" class="tag-check" value="smile"><span class="tag-label">😄 笑容燦爛</span></label>
+                <label><input type="checkbox" class="tag-check" value="child"><span class="tag-label">👶 童顏</span></label>
+                <label><input type="checkbox" class="tag-check" value="elder"><span class="tag-label">🧓 成熟/長輩</span></label>
+                <label><input type="checkbox" class="tag-check" value="wearing suit"><span class="tag-label">👔 正裝</span></label>
+                <label><input type="checkbox" class="tag-check" value="wearing hat"><span class="tag-label">🧢 戴帽子</span></label>
             </div>
         </div>
 
-        <button id="btn-upload-finish" class="btn-action" onclick="finishUploadMode()" style="display:none; width:100%; max-width:none; margin-bottom: 20px;">✨ 直接輸出 (使用原圖)</button>
-        
-        <button style="margin-top:5px; background:transparent; border:none; color:#666; font-size:15px;" onclick="location.reload()">⬅️ 返回首頁</button>
+        <h3 style="width:100%; font-size:14px; color:#888; margin-bottom:15px; margin-top:10px; text-align:center;">✨ 選擇 AI 畫風</h3>
+        <div class="style-grid">
+            <div class="style-card style-elf" onclick="generateAI('elf')">🧚 虛幻精靈</div>
+            <div class="style-card style-tao" onclick="generateAI('taoist')">🕊️ 白陽聖潔</div>
+            <div class="style-card" onclick="generateAI('pixar')">🧸 皮克斯風</div>
+            <div class="style-card" onclick="generateAI('ghibli')">🍃 吉卜力風</div>
+            <div class="style-card" onclick="generateAI('cyberpunk')">🌃 賽博龐克</div>
+            <div class="style-card" onclick="generateAI('oil')">🎨 梵谷油畫</div>
+            <div class="style-card" onclick="generateAI('comic')">💥 美式漫畫</div>
+            <div class="style-card" onclick="generateAI('ink')">🖌️ 東方水墨</div>
+        </div>
+
+        <button class="btn-action btn-direct-frame" onclick="finishDirectMode()" style="width:100%; margin-top:20px;">直接裝裱 (不重繪)</button>
+        <button style="margin-top:15px; background:transparent; border:none; color:#666; font-size:14px;" onclick="location.reload()">⬅️ 返回重拍</button>
     </div>
 
     <div id="stage-3" class="stage" style="justify-content: center;">
@@ -151,9 +152,9 @@
     </div>
 
     <div id="stage-4" class="stage">
-        <h2 style="color: var(--accent-color); font-size: 22px;">✨ 您的專屬畫像</h2>
-        <div class="viewport-container" style="background: transparent; border: none; min-height: 300px; height: auto; padding: 10px;">
-            <div id="result-placeholder" style="display:block; color:#555;">準備中...</div>
+        <h2 style="color: var(--accent-color); font-size: 22px;">✨ 您的靈魂畫像</h2>
+        <div class="viewport-container">
+            <div id="result-placeholder" style="display:block; color:#555;">正在裝裱...</div>
             <img id="final-result" src="" style="box-shadow: 0 10px 40px rgba(0,0,0,0.7); width: auto; height: auto; max-width: 100%; max-height: 65vh;">
         </div>
         <p style="color: var(--accent-color); font-weight: bold; font-size: 16px; margin-top: 15px;">👇 長按圖片儲存 👇</p>
@@ -174,7 +175,6 @@
 <script>
     const video = document.getElementById('webcam'), previewImg = document.getElementById('preview-img'), finalImg = document.getElementById('final-result'), cameraList = document.getElementById('camera-list'), errorMsg = document.getElementById('error-msg');
     const canvasComp = document.getElementById('canvas-comp'); const canvasResize = document.getElementById('canvas-resize');
-    let currentGender = 'girl'; let isUploadMode = false; let loadingTimer;
     let retryCount = 0; const maxRetries = 2; let progressInterval;
 
     window.onerror = function(msg, url, line, col, error) {
@@ -184,14 +184,20 @@
         }
     };
 
+    // V44: 從開場白進入
+    function startExperience() {
+        document.getElementById('stage-intro').style.display = 'none';
+        document.getElementById('stage-intro').classList.remove('active');
+        document.getElementById('start-overlay').style.display = 'flex';
+    }
+
     async function initCameraMode() {
         errorMsg.innerText = "";
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             await listCameras();
             stream.getTracks().forEach(track => track.stop());
-            setMode(false);
-            document.getElementById('btn-container').style.display = 'none';
+            document.getElementById('step-permission').style.display = 'none';
             document.getElementById('step-selection').style.display = 'block';
         } catch (err) { console.error(err); errorMsg.innerText = "啟動失敗：請確認瀏覽器已允許相機權限(NotAllowedError)。"; }
     }
@@ -212,42 +218,17 @@
         const deviceId = cameraList.value;
         const constraints = { video: { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } } };
         try { const stream = await navigator.mediaDevices.getUserMedia(constraints); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (err) { 
-            try { const stream = await navigator.mediaDevices.getUserMedia({ video: true }); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (fatalErr) { alert("相機啟動失敗，請檢查權限設定。"); } 
+            try { const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } }); video.srcObject = stream; document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-1'); } catch (fatalErr) { alert("相機啟動失敗，請檢查權限設定。"); } 
         }
     }
 
-    // V14 特徵獲取函式
-    function getDNA() {
-        const checkboxes = document.querySelectorAll('.tag-check:checked');
-        let tags = [];
-        checkboxes.forEach(cb => tags.push(cb.value));
-        return tags.join(", ");
-    }
-
-    function selectGender(g) { 
-        currentGender = g; 
-        document.getElementById('btn-boy').classList.toggle('selected', g==='boy'); 
-        document.getElementById('btn-girl').classList.toggle('selected', g==='girl'); 
-    }
-
-    function setMode(upload) { 
-        isUploadMode = upload; 
-        const stage2 = document.getElementById('stage-2'); 
-        const uploadBtn = document.getElementById('btn-upload-finish'); 
-        previewImg.style.display = 'none';
-        document.getElementById('preview-placeholder').style.display = 'flex';
-        if (isUploadMode) { stage2.classList.add('upload-mode'); uploadBtn.style.display = 'flex'; previewImg.classList.remove('mirror'); } else { stage2.classList.remove('upload-mode'); uploadBtn.style.display = 'none'; previewImg.classList.add('mirror'); } 
-    }
-    function triggerUpload() { document.getElementById('file-input').click(); }
-    document.getElementById('file-input').addEventListener('change', function(e) { if (e.target.files && e.target.files[0]) { const reader = new FileReader(); reader.onload = function(event) { const img = new Image(); img.onload = function() { processInputImage(img); }; img.src = event.target.result; }; reader.readAsDataURL(e.target.files[0]); } });
-    
-    function finishUploadMode() { composeDirectly("⚡ 正在處理..."); }
-
     function processInputImage(imgElement, isCamera = false) {
-        const MAX_WORK_SIZE = 1024; 
-        let w = imgElement.width; let h = imgElement.height;
-        if (w > h) { if (w > MAX_WORK_SIZE) { h *= MAX_WORK_SIZE / w; w = MAX_WORK_SIZE; } } 
-        else { if (h > MAX_WORK_SIZE) { w *= MAX_WORK_SIZE / h; h = MAX_WORK_SIZE; } }
+        const MAX_WORK_SIZE = 1200; 
+        let w = imgElement.width || imgElement.videoWidth; let h = imgElement.height || imgElement.videoHeight;
+        const ratio = w / h;
+        if (w > h) { if (w > MAX_WORK_SIZE) { w = MAX_WORK_SIZE; h = w / ratio; } } 
+        else { if (h > MAX_WORK_SIZE) { h = MAX_WORK_SIZE; w = h * ratio; } }
+        
         canvasResize.width = w; canvasResize.height = h;
         const ctx = canvasResize.getContext('2d');
         if (isCamera) { ctx.translate(w, 0); ctx.scale(-1, 1); }
@@ -255,13 +236,22 @@
         previewImg.src = canvasResize.toDataURL('image/jpeg', 0.95);
         previewImg.style.display = 'block';
         document.getElementById('preview-placeholder').style.display = 'none';
-        setMode(!isCamera); document.getElementById('start-overlay').style.display = 'none'; switchStage('stage-2');
+        document.getElementById('start-overlay').style.display = 'none'; 
+        switchStage('stage-2');
     }
 
     function capturePhoto() { processInputImage(video, true); }
+    function finishDirectMode() { composeDirectly("⚡ 正在為照片裝裱 (原圖)..."); }
+
+    // V44: 獲取 DNA
+    function getDNA() {
+        const checkboxes = document.querySelectorAll('.tag-check:checked');
+        let tags = [];
+        checkboxes.forEach(cb => tags.push(cb.value));
+        return tags.join(", ");
+    }
 
     function generateAI(styleKey) { 
-        if (isUploadMode) return;
         switchStage('stage-3');
         document.getElementById('loading-text').innerText = "⚡ AI 繪圖中...";
         simulateProgress();
@@ -270,21 +260,18 @@
     }
 
     function tryLoadAI(styleKey, width, height) {
-        let genderBase = currentGender === 'boy' ? "handsome man, male" : "beautiful woman, female"; 
-        let dna = getDNA(); // 獲取特徵
+        // V44: 加入 DNA 到 Prompt
+        let dna = getDNA();
         let fullPrompt = ""; 
-
-        // V14.5 Prompt 組合邏輯
-        if(styleKey === 'pixar') fullPrompt = `cute 3d pixar style ${genderBase}, ${dna}, studio lighting, big eyes, 8k`; 
-        else if(styleKey === 'ghibli') fullPrompt = `studio ghibli anime portrait of ${genderBase}, ${dna}, hayao miyazaki style, watercolor background`; 
-        else if(styleKey === 'cyberpunk') fullPrompt = `cyberpunk portrait of ${genderBase}, ${dna}, neon lights, mechanical parts, futuristic city`; 
-        else if(styleKey === 'oil') fullPrompt = `van gogh oil painting portrait of ${genderBase}, ${dna}, thick brushstrokes, artistic, starry night`; 
-        else if(styleKey === 'comic') fullPrompt = `american comic superhero ${genderBase}, ${dna}, bold lines, halftone dots, marvel style`; 
-        else if(styleKey === 'ink') fullPrompt = `chinese ink wash painting portrait of ${genderBase}, ${dna}, black and white, sumi-e, artistic, red stamp`; 
-        // V14.5 新增：虛幻精靈
-        else if(styleKey === 'elf') fullPrompt = `(masterpiece), best quality, ethereal fantasy portrait of a ${genderBase}, ${dna}, beautiful elf spirit, pointed ears, glowing skin, magical forest background with bioluminescent lights, dreamy atmosphere, highly detailed, 8k`; 
-        // V14.5 保留：白陽聖潔
-        else if(styleKey === 'taoist') fullPrompt = `(masterpiece), traditional chinese ancient style portrait of ${genderBase}, ${dna}, righteous aura, white hanfu, taoist robe, ethereal atmosphere, soft lighting, temple background, lotus, hd, 8k`; 
+        
+        if(styleKey === 'pixar') fullPrompt = `cute 3d pixar style portrait of ${dna}, highly detailed, studio lighting, big eyes, 8k`; 
+        else if(styleKey === 'ghibli') fullPrompt = `studio ghibli anime portrait of ${dna}, hayao miyazaki style, watercolor background, high quality`; 
+        else if(styleKey === 'cyberpunk') fullPrompt = `cyberpunk portrait of ${dna}, neon lights, mechanical parts, futuristic city background, realistic`; 
+        else if(styleKey === 'oil') fullPrompt = `van gogh oil painting portrait of ${dna}, thick brushstrokes, artistic, starry night background`; 
+        else if(styleKey === 'comic') fullPrompt = `american comic superhero portrait of ${dna}, bold lines, halftone dots, marvel style`; 
+        else if(styleKey === 'ink') fullPrompt = `chinese ink wash painting portrait of ${dna}, black and white, sumi-e, artistic, red stamp`; 
+        else if(styleKey === 'elf') fullPrompt = `(masterpiece), ethereal fantasy portrait of ${dna}, beautiful elf spirit, pointed ears, glowing skin, magical forest`; 
+        else if(styleKey === 'taoist') fullPrompt = `(masterpiece), traditional chinese ancient style portrait of ${dna}, righteous aura, ethereal atmosphere, soft lighting, hd, 8k, hanfu`; 
         
         const ratio = previewImg.naturalWidth / previewImg.naturalHeight;
         let aiW = width, aiH = height;
@@ -295,7 +282,7 @@
         const tempImg = new Image();
         tempImg.crossOrigin = "anonymous";
         
-        const watchdog = setTimeout(() => { handleAILoadError(styleKey, "超時"); }, 45000);
+        const watchdog = setTimeout(() => { handleAILoadError(styleKey, "超時"); }, 40000);
 
         tempImg.onload = () => {
             clearTimeout(watchdog);
@@ -316,8 +303,8 @@
             debug.innerText = `連線繁忙，降級重試中 (${retryCount}/${maxRetries})...`;
             setTimeout(() => { tryLoadAI(styleKey, 512, 768); }, 1500);
         } else {
-            debug.innerText = "AI 忙線，已切換至原圖裝裱...";
-            setTimeout(() => { composeDirectly("⚠️ AI 忙線，已為您使用原圖"); }, 500);
+            debug.innerText = "AI 忙線，切換至原圖裝裱...";
+            setTimeout(() => { composeDirectly("⚠️ AI 忙線，已為您使用原圖"); }, 200);
         }
     }
 
@@ -344,14 +331,13 @@
 
     function processComposition(imageSource) {
         try {
-            const workW = imageSource.width;
-            const workH = imageSource.height;
+            const workW = imageSource.width || imageSource.naturalWidth;
+            const workH = imageSource.height || imageSource.naturalHeight;
 
             canvasComp.width = workW; 
             canvasComp.height = workH;
             const ctx = canvasComp.getContext('2d');
 
-            // 直接繪製，無邊框無文字
             ctx.drawImage(imageSource, 0, 0);
             
             finalImg.src = canvasComp.toDataURL('image/png'); 
