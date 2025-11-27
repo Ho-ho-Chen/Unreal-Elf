@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Live Mirror AI - V50.1 Final Fix</title>
+    <title>Live Mirror AI - V51.0 Final Fix</title>
     <style>
         /* M28 視覺傳播：黑金禪意風格 */
         :root { --bg-color: #050505; --panel-bg: #111111; --accent-color: #c5a059; --text-primary: #e0e0e0; }
@@ -18,16 +18,24 @@
         .active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 通用視窗容器基礎設定 */
-        .viewport-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; flex: none; border: 1px solid #333; }
-        
-        /* V50.1 重點：只在拍照和預覽階段強制 3:4 比例 */
-        #stage-1 .viewport-container, 
-        #stage-2 .viewport-container {
-            aspect-ratio: 3 / 4;
-            max-height: 60vh;
+        /* V51.0: 全域統一使用 3:4 比例容器，確保不過長 */
+        .viewport-container { 
+            width: 100%; 
+            aspect-ratio: 3 / 4; /* 關鍵：鎖定 3:4 */
+            max-height: 60vh; 
+            background: #000; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            flex: none; 
+            border: 1px solid #333; 
         }
-
+        
+        /* 拍照與預覽使用 cover 填滿 */
         video.mirror { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         img#preview-img { width: 100%; height: 100%; object-fit: cover; } 
         
@@ -40,8 +48,31 @@
         .intro-text { font-size: 16px; line-height: 1.8; color: #ccc; margin-bottom: 30px; text-align: left; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
         .highlight { color: var(--accent-color); font-weight: bold; text-decoration: underline; text-decoration-color: rgba(197, 160, 89, 0.3); text-underline-offset: 4px; }
 
-        /* 按鈕 V49 */
-        .btn-action { padding: 0; height: 60px; line-height: 60px; border-radius: 30px; border: none; background: linear-gradient(135deg, var(--accent-color), #aa8a2e); color: #000; font-size: 20px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4); width: 90%; max-width: 280px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s; outline: none; margin-top: 15px; letter-spacing: 1px; }
+        /* V51.0: 按鈕優化 - 修正擠壓問題 */
+        .btn-action { 
+            padding: 0 20px; /* 增加水平內距 */
+            height: 60px; 
+            /* remove fixed line-height, use flex positioning */
+            border-radius: 30px; 
+            border: none; 
+            background: linear-gradient(135deg, var(--accent-color), #aa8a2e); 
+            color: #000; 
+            font-size: 18px; /* 微調字體大小至 18px */
+            font-weight: 900; 
+            cursor: pointer; 
+            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4); 
+            width: 90%; 
+            max-width: 300px; /* 放寬最大寬度 */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            transition: transform 0.1s; 
+            outline: none; 
+            margin-top: 15px; 
+            letter-spacing: 1px;
+            white-space: nowrap; /* 防止文字換行 */
+        }
         .btn-action:active { transform: scale(0.96); }
 
         .gender-toggle { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
@@ -55,10 +86,8 @@
         .tag-label { padding: 8px 12px; background: #252525; border-radius: 20px; font-size: 13px; color: #999; cursor: pointer; border: 1px solid #444; transition: all 0.2s; user-select: none; }
         .tag-check:checked + .tag-label { background: var(--accent-color); color: black; border-color: var(--accent-color); font-weight: bold; }
 
-        /* V50.1: 風格卡片文字對齊優化 */
         .style-category-title { width: 100%; font-size: 12px; color: #666; margin-top: 15px; margin-bottom: 8px; text-align: left; padding-left: 5px; border-left: 3px solid var(--accent-color); letter-spacing: 1px; }
         .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 5px; }
-        /* 加入 flex 讓文字垂直置中，避免跑版 */
         .style-card { background: #2a2a2a; border: 1px solid #444; border-radius: 12px; padding: 15px 5px; cursor: pointer; text-align: center; font-size: 15px; position: relative; overflow: hidden; transition: all 0.2s; display: flex; align-items: center; justify-content: center; min-height: 50px; }
         .style-card:active { transform: scale(0.96); background: #444; }
         .style-elf { border: 1px solid var(--accent-color); background: rgba(197, 160, 89, 0.1); color: var(--accent-color); font-weight: bold; }
@@ -72,24 +101,16 @@
         .progress-wrapper { width: 85%; position: relative; margin-top: 30px; }
         .progress-text { position: absolute; top: -25px; right: 0; color: var(--accent-color); font-weight: bold; font-size: 14px; }
 
-        /* V50.1 重點：結果頁解除比例鎖定，還原真實比例 */
+        /* V51.0: 結果頁重新鎖定 3:4，並使用 contain 確保不變形 */
         #stage-4 .viewport-container { 
-            aspect-ratio: auto; /* 解除固定比例 */
-            height: auto; /* 高度自動 */
+            aspect-ratio: 3 / 4; 
             background: transparent; 
             border: none; 
-            display: block; /* 改為區塊顯示 */
-            text-align: center;
-            min-height: auto;
         }
-        /* 圖片使用 contain 確保不變形 */
         img#final-result { 
-            width: auto;
-            height: auto;
-            max-width: 100%; 
-            max-height: 70vh; /* 限制最大高度以免爆屏 */
-            object-fit: contain; /* 關鍵：保持原比例，不拉伸 */
-            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 關鍵：保持原比例完整顯示在 3:4 框內 */
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-radius: 8px;
         }
@@ -99,7 +120,7 @@
 
 <div id="app-window">
     <header>
-        Live Mirror AI <span class="version-tag">V50.1 Fix</span>
+        Live Mirror AI <span class="version-tag">V51.0 Final Fix</span>
     </header>
 
     <div id="stage-intro" class="stage active" style="display: flex;">
@@ -230,7 +251,7 @@
         }
     };
 
-    // V50: 特徵互斥邏輯
+    // 特徵互斥邏輯
     function checkMutex(el) {
         const val = el.value;
         if (!el.checked) return; 
@@ -337,14 +358,17 @@
         let subject = currentGender === 'boy' ? "handsome man, male" : "beautiful woman, female";
         let fullPrompt = ""; 
         
-        if(styleKey === 'pixar') fullPrompt = `cute 3d pixar style portrait of ${subject}, ${dna}, highly detailed, studio lighting, big eyes, 8k, vertical composition`; 
-        else if(styleKey === 'ghibli') fullPrompt = `studio ghibli anime portrait of ${subject}, ${dna}, hayao miyazaki style, watercolor background, high quality, vertical composition`; 
-        else if(styleKey === 'cyberpunk') fullPrompt = `cyberpunk portrait of ${subject}, ${dna}, neon lights, mechanical parts, futuristic city background, realistic, vertical composition`; 
-        else if(styleKey === 'oil') fullPrompt = `van gogh oil painting portrait of ${subject}, ${dna}, thick brushstrokes, artistic, starry night background, vertical composition`; 
-        else if(styleKey === 'comic') fullPrompt = `american comic superhero portrait of ${subject}, ${dna}, bold lines, halftone dots, marvel style, vertical composition`; 
-        else if(styleKey === 'ink') fullPrompt = `chinese ink wash painting portrait of ${subject}, ${dna}, black and white, sumi-e, artistic, red stamp, vertical composition`; 
-        else if(styleKey === 'elf') fullPrompt = `(masterpiece), ethereal fantasy portrait of ${subject}, ${dna}, beautiful elf spirit, pointed ears, glowing skin, magical forest background, detailed face, 8k, vertical composition`; 
-        else if(styleKey === 'taoist') fullPrompt = `(masterpiece), traditional chinese ancient style portrait of ${subject}, ${dna}, righteous aura, white hanfu, taoist robe, ethereal atmosphere, soft lighting, temple background, lotus, hd, 8k, vertical composition`; 
+        // V51.0: 在所有 Prompt 中強制加入 "aspect ratio 3:4" 以解決長臉問題
+        const ratioFix = ", aspect ratio 3:4";
+
+        if(styleKey === 'pixar') fullPrompt = `cute 3d pixar style portrait of ${subject}, ${dna}, highly detailed, studio lighting, big eyes, 8k, vertical composition${ratioFix}`; 
+        else if(styleKey === 'ghibli') fullPrompt = `studio ghibli anime portrait of ${subject}, ${dna}, hayao miyazaki style, watercolor background, high quality, vertical composition${ratioFix}`; 
+        else if(styleKey === 'cyberpunk') fullPrompt = `cyberpunk portrait of ${subject}, ${dna}, neon lights, mechanical parts, futuristic city background, realistic, vertical composition${ratioFix}`; 
+        else if(styleKey === 'oil') fullPrompt = `van gogh oil painting portrait of ${subject}, ${dna}, thick brushstrokes, artistic, starry night background, vertical composition${ratioFix}`; 
+        else if(styleKey === 'comic') fullPrompt = `american comic superhero portrait of ${subject}, ${dna}, bold lines, halftone dots, marvel style, vertical composition${ratioFix}`; 
+        else if(styleKey === 'ink') fullPrompt = `chinese ink wash painting portrait of ${subject}, ${dna}, black and white, sumi-e, artistic, red stamp, vertical composition${ratioFix}`; 
+        else if(styleKey === 'elf') fullPrompt = `(masterpiece), ethereal fantasy portrait of ${subject}, ${dna}, beautiful elf spirit, pointed ears, glowing skin, magical forest background, detailed face, 8k, vertical composition${ratioFix}`; 
+        else if(styleKey === 'taoist') fullPrompt = `(masterpiece), traditional chinese ancient style portrait of ${subject}, ${dna}, righteous aura, white hanfu, taoist robe, ethereal atmosphere, soft lighting, temple background, lotus, hd, 8k, vertical composition${ratioFix}`; 
 
         const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${width}&height=${height}&seed=${Math.floor(Math.random()*999999)}&nologo=true&model=flux&t=${Date.now()}`; 
         
